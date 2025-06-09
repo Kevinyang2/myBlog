@@ -1,6 +1,8 @@
 import React from 'react'
 import { Metadata } from 'next'
 import './globals.css'
+import { Providers } from './providers'
+import AuthNav from './components/AuthNav'
 
 export const metadata: Metadata = {
   title: '我的个人博客',
@@ -17,6 +19,7 @@ export default function RootLayout({
   return (
     <html lang="zh-CN">
       <body className="bg-gray-50 min-h-screen">
+        <Providers>
         <header className="bg-white shadow-sm border-b border-gray-200">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center py-6">
@@ -26,11 +29,14 @@ export default function RootLayout({
                 </a>
                 <p className="text-gray-600 mt-1">记录生活，分享技术</p>
               </div>
-              <nav className="hidden md:flex space-x-8">
-                <a href="/" className="text-gray-700 hover:text-blue-600 transition-colors">首页</a>
-                <a href="/about" className="text-gray-700 hover:text-blue-600 transition-colors">关于我</a>
-                <a href="/admin" className="text-gray-700 hover:text-blue-600 transition-colors">写文章</a>
-              </nav>
+              <div className="flex items-center space-x-8">
+                <nav className="hidden md:flex space-x-8">
+                  <a href="/" className="text-gray-700 hover:text-blue-600 transition-colors">首页</a>
+                  <a href="/about" className="text-gray-700 hover:text-blue-600 transition-colors">关于我</a>
+                  <a href="/admin" className="text-gray-700 hover:text-blue-600 transition-colors">写文章</a>
+                </nav>
+                <AuthNav />
+              </div>
             </div>
           </div>
         </header>
@@ -47,6 +53,7 @@ export default function RootLayout({
             </div>
           </div>
         </footer>
+        </Providers>
       </body>
     </html>
   )

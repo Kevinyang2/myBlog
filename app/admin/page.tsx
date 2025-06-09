@@ -1,6 +1,8 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 import { Plus, Edit, Trash2, Eye } from 'lucide-react'
 
 interface Post {
@@ -14,13 +16,20 @@ interface Post {
 }
 
 export default function AdminPage() {
+  const { data: session, status } = useSession()
+  const router = useRouter()
   const [posts, setPosts] = useState<Post[]>([])
   const [showEditor, setShowEditor] = useState(false)
   const [editingPost, setEditingPost] = useState<string | null>(null)
 
   useEffect(() => {
+    if (status === 'loading') return // 还在加载中
+    if (!session) {
+      router.push('/auth/signin') // 未登录，跳转到登录页
+      return
+    }
     fetchPosts()
-  }, [])
+  }, [session, status, router])
 
   const fetchPosts = async () => {
     try {
@@ -57,6 +66,34 @@ export default function AdminPage() {
     setShowEditor(false)
     setEditingPost(null)
     fetchPosts()
+  }
+
+  // 加载状态
+  if (status === 'loading') {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <span className="ml-2">加载中...</span>
+      </div>
+    )
+  }
+
+  // 未登录状态
+  if (!session) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">需要登录</h1>
+          <p className="text-gray-600 mb-4">请先登录以访问管理页面</p>
+          <button
+            onClick={() => router.push('/auth/signin')}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            前往登录
+          </button>
+        </div>
+      </div>
+    )
   }
 
   if (showEditor) {

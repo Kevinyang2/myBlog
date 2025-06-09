@@ -15,11 +15,13 @@ function ensurePostsDirectory() {
 // GET - 获取所有文章
 export async function GET() {
   try {
+    console.time('API-posts-GET') // 性能监控
     ensurePostsDirectory()
     
     const fileNames = fs.readdirSync(postsDirectory)
     const posts = fileNames
       .filter((fileName) => fileName.endsWith('.md'))
+      .slice(0, 50) // 限制最多返回50篇文章，避免过度加载
       .map((fileName) => {
         const slug = fileName.replace(/\.md$/, '')
         const fullPath = path.join(postsDirectory, fileName)
@@ -38,7 +40,12 @@ export async function GET() {
       })
       .sort((a, b) => (a.date < b.date ? 1 : -1))
 
-    return NextResponse.json(posts)
+    console.timeEnd('API-posts-GET')
+    return NextResponse.json(posts, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300', // 缓存1分钟
+      },
+    })
   } catch (error) {
     console.error('获取文章列表失败:', error)
     return NextResponse.json({ error: '获取文章列表失败' }, { status: 500 })

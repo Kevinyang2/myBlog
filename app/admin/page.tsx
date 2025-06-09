@@ -33,11 +33,32 @@ export default function AdminPage() {
 
   const fetchPosts = async () => {
     try {
-      const response = await fetch('/api/posts')
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 10000) // 10秒超时
+
+      const response = await fetch('/api/posts', {
+        signal: controller.signal,
+        headers: {
+          'Cache-Control': 'no-cache',
+        },
+      })
+      
+      clearTimeout(timeoutId)
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+      
       const data = await response.json()
       setPosts(data)
     } catch (error) {
-      console.error('获取文章列表失败:', error)
+      if (error.name === 'AbortError') {
+        console.error('请求超时，请检查网络连接')
+        alert('请求超时，请检查网络连接后重试')
+      } else {
+        console.error('获取文章列表失败:', error)
+        alert('获取文章列表失败，请稍后重试')
+      }
     }
   }
 

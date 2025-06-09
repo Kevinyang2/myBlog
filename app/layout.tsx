@@ -11,6 +11,12 @@ export const metadata: Metadata = {
   authors: [{ name: '博主' }],
 }
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+}
+
 export default function RootLayout({
   children,
 }: {
@@ -34,6 +40,7 @@ export default function RootLayout({
                   <a href="/" className="text-gray-700 hover:text-blue-600 transition-colors">首页</a>
                   <a href="/about" className="text-gray-700 hover:text-blue-600 transition-colors">关于我</a>
                   <a href="/admin" className="text-gray-700 hover:text-blue-600 transition-colors">写文章</a>
+                  <a href="/health" className="text-gray-700 hover:text-blue-600 transition-colors">系统状态</a>
                 </nav>
                 <AuthNav />
               </div>
